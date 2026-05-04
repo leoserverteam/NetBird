@@ -1,24 +1,38 @@
-version: '3'
+version: '3.8'
 services:
+  netbird-server:
+    image: netbirdio/netbird-server:latest
+    restart: always
+    environment:
+      - NETBIRD_MANAGEMENT_URL=https://vpn.leonet.site
+      - NETBIRD_SIGNAL_URI=https://vpn.leonet.site:443
+      - NETBIRD_STUN_URI=stun:vpn.leonet.site:3478
+      # Настройка портов внутри контейнера
+      - NETBIRD_MGMT_HTTP_PORT=7071
+      # Настройки Authentik
+      - NETBIRD_AUTH_ISSUER=leonet.site
+      - NETBIRD_AUTH_AUDIENCE=${NB_AUTH_AUDIENCE}
+      - NETBIRD_AUTH_SECRET=${NB_AUTH_SECRET}
+      - NETBIRD_AUTH_PKCE_ENABLED=true
+    ports:
+      - "127.0.0.1:7071:7071" # Сопоставляем внешний 7071 с внутренним 7071
+      - "3478:3478/udp"
+    volumes:
+      - ./netbird-data:/var/lib/netbird
+      - ./config.yaml:/etc/netbird/config.yaml
+    env_file:
+      - .env
+
   dashboard:
     image: netbirdio/dashboard:latest
     restart: always
     ports:
-      - "127.0.0.1:7070:80"
+      - "127.0.0.1:7070:80" # Внешний 7070 на 80 порт контейнера
     environment:
-      - LETSENCRYPT_DOMAIN=none
-
-  netbird-server:
-    image: netbirdio/netbird-server:latest
-    restart: always
-    ports:
-      - "127.0.0.1:7071:80"
-      - "3478:3478/udp" # STUN
-    volumes:
-      - netbird_data:/var/lib/netbird
-      - ./config.yaml:/etc/netbird/config.yaml
-    command: ["--config", "/etc/netbird/config.yaml"]
-
-volumes:
-  netbird_data:
-
+      - NETBIRD_MGMT_API_ENDPOINT=https://vpn.leonet.site/api
+      - NETBIRD_MGMT_GRPC_API_ENDPOINT=https://vpn.leonet.site:443
+      - NETBIRD_AUTH_AUDIENCE=${NB_AUTH_AUDIENCE}
+      - NETBIRD_AUTH_ISSUER=leonet.site
+      - NETBIRD_AUTH_CLIENT_ID=${NB_AUTH_AUDIENCE}
+    env_file:
+      - .env
