@@ -19,6 +19,7 @@ services:
       - "3478:3478/udp"
     volumes:
       - ./netbird-data:/var/lib/netbird
+      - ./config.yaml:/etc/netbird/config.yaml
     env_file:
       - .env
 
