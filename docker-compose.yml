@@ -14,6 +14,7 @@ services:
       - NETBIRD_AUTH_AUDIENCE=${NB_AUTH_AUDIENCE}
       - NETBIRD_AUTH_SECRET=${NB_AUTH_SECRET}
       - NETBIRD_AUTH_PKCE_ENABLED=true
+      - NETBIRD_SERVER_EXPOSED_ADDRESS=https://vpn.leonet.site:443
     ports:
       - "127.0.0.1:7071:7071" # Сопоставляем внешний 7071 с внутренним 7071
       - "3478:3478/udp"
