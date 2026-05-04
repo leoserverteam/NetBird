@@ -1,0 +1,26 @@
+name: Deploy App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  prepare-env:
+    runs-on: [self-hosted] # Укажите ваш раннер (тот же, где деплой)
+    steps:
+      - name: Create .env file
+        run: |
+          # Переходим в папку проекта и записываем секрет в ${{ github.event.repository.name }}/.env
+          mkdir -p ${{vars.DEPLOY_PATH}}/${{ github.event.repository.name }}
+          echo "NB_AUTH_AUDIENCE=${{ secrets.NB_AUTH_AUDIENCE }}" > ${{vars.DEPLOY_PATH}}/${{ github.event.repository.name }}/.env 
+          echo "NB_AUTH_SECRET=${{ secrets.NB_AUTH_SECRET }}" >> ${{vars.DEPLOY_PATH}}/${{ github.event.repository.name }}/.env 
+  call-deploy:
+    needs: [prepare-env]
+    uses: leoserverteam/DevOpsTemplates/.github/workflows/onlycompose.yml@main
+    with:
+      project_name: "${{ github.event.repository.name }}"
+
+  call-nginx:
+    needs: [call-deploy]
+    uses: leoserverteam/DevOpsTemplates/.github/workflows/deploynginx.yml@main
