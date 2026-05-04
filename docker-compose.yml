@@ -10,7 +10,7 @@ services:
       # Настройка портов внутри контейнера
       - NETBIRD_MGMT_HTTP_PORT=7071
       # Настройки Authentik
-      - NETBIRD_AUTH_ISSUER=leonet.site
+      - NETBIRD_AUTH_ISSUER=https://leonet.site
       - NETBIRD_AUTH_AUDIENCE=${NB_AUTH_AUDIENCE}
       - NETBIRD_AUTH_SECRET=${NB_AUTH_SECRET}
       - NETBIRD_AUTH_PKCE_ENABLED=true
@@ -34,5 +34,6 @@ services:
       - NETBIRD_AUTH_AUDIENCE=${NB_AUTH_AUDIENCE}
       - NETBIRD_AUTH_ISSUER=leonet.site
       - NETBIRD_AUTH_CLIENT_ID=${NB_AUTH_AUDIENCE}
+      - AUTH_AUTHORITY=https://leonet.site
     env_file:
       - .env
